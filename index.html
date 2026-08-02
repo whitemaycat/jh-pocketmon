@@ -259,6 +259,7 @@
   border: 6px solid #2b2b2b;
   background: #f5f5f5;
   box-shadow: 0 4px 12px rgb(0 0 0 / 0.3);
+  display: none;
 }
 
 /* 포켓몬 카드 */
@@ -653,20 +654,20 @@ body.is-modal-open {
   >
     <div id="modal-backdrop" class="absolute inset-0 bg-ball-black/60 backdrop-blur-sm"></div>
 
-    <div
-      id="modal-panel"
-      class="relative flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-t-[2rem] bg-white shadow-2xl sm:rounded-[2rem]"
-    >
-      <!-- 모달 헤더 (몬스터볼 테마) -->
-      <div id="modal-header" class="relative shrink-0 bg-ball-red px-5 pb-16 pt-5 text-white">
-        <button
-          id="modal-close"
-          type="button"
-          class="absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full bg-white/25 text-2xl font-bold transition hover:bg-white/40 active:scale-90"
-          aria-label="닫기"
-        >
-          ✕
-        </button>
+      <div
+        id="modal-panel"
+        class="relative flex max-h-[92vh] w-full max-w-lg flex-col overflow-hidden rounded-t-[2rem] bg-white shadow-2xl sm:rounded-[2rem]"
+      >
+        <!-- 모달 헤더 (몬스터볼 테마) -->
+        <div id="modal-header" class="relative shrink-0 bg-ball-red px-5 pb-16 pt-5 text-white">
+          <button
+            id="modal-close"
+            type="button"
+            class="absolute right-3 top-3 z-10 flex h-10 w-10 items-center justify-center rounded-full bg-white/30 text-xl font-bold transition hover:bg-white/50 active:scale-90 sm:right-4 sm:top-4 sm:h-11 sm:w-11 sm:text-2xl"
+            aria-label="닫기"
+          >
+            ✕
+          </button>
 
         <p id="modal-number" class="text-base font-bold text-white/85">#0000</p>
         <h2 id="modal-name" class="text-3xl font-bold drop-shadow-md">포켓몬</h2>
@@ -1413,9 +1414,12 @@ function openModal(entry, trigger) {
   modalElements.modal.classList.add('is-open');
   document.body.classList.add('is-modal-open');
   modalElements.close.focus();
+
+  // 히스토리에 상태 추가 (브라우저 뒤로가기 지원)
+  history.pushState({ modalOpen: true, pokemonId: entry.id }, '', `#pokemon-${entry.id}`);
 }
 
-function closeModal() {
+function closeModal(fromPopState = false) {
   if (!isModalOpen()) return;
 
   stopCry();
@@ -1425,6 +1429,11 @@ function closeModal() {
 
   if (lastFocused?.isConnected) lastFocused.focus();
   lastFocused = null;
+
+  // URL에서 해시 제거 (popstate에서 호출된 경우는 이미 히스토리가 변경됨)
+  if (!fromPopState && window.location.hash) {
+    history.replaceState(null, '', window.location.pathname + window.location.search);
+  }
 }
 
 function trapFocus(event) {
@@ -1460,6 +1469,13 @@ function initModal() {
       closeModal();
     } else if (event.key === 'Tab') {
       trapFocus(event);
+    }
+  });
+
+  // 브라우저 뒤로가기 버튼 처리
+  window.addEventListener('popstate', (event) => {
+    if (isModalOpen() && (!event.state || !event.state.modalOpen)) {
+      closeModal(true);
     }
   });
 }
