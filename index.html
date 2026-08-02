@@ -515,19 +515,24 @@ body.is-modal-open {
 }
 
 /* 모바일 safe-area 지원 (노치/상태바 대응) */
-@supports (padding-top: env(safe-area-inset-top)) {
+@media (max-width: 639px) {
+  #modal.is-open {
+    padding-top: max(2.75rem, constant(safe-area-inset-top));
+    padding-top: max(2.75rem, env(safe-area-inset-top, 0px));
+    align-items: flex-end;
+  }
+
+  #modal-panel {
+    max-height: calc(100dvh - max(2.75rem, constant(safe-area-inset-top)));
+    max-height: calc(100dvh - max(2.75rem, env(safe-area-inset-top, 0px)));
+  }
+
   #modal-header {
-    padding-top: calc(1.25rem + env(safe-area-inset-top));
+    padding-top: 1.25rem;
   }
-  
+
   #modal-close {
-    top: calc(0.75rem + env(safe-area-inset-top));
-  }
-  
-  @media (min-width: 640px) {
-    #modal-close {
-      top: calc(1rem + env(safe-area-inset-top));
-    }
+    top: 0.75rem;
   }
 }
   </style>
