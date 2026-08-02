@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title> 제하의 포켓몬 도감</title>
   <meta name="description" content="초등학생을 위한 한글 포켓몬 도감! 포켓몬을 검색하고 능력치와 울음소리를 확인해 보세요." />
 
@@ -512,6 +512,23 @@
 
 body.is-modal-open {
   overflow: hidden;
+}
+
+/* 모바일 safe-area 지원 (노치/상태바 대응) */
+@supports (padding-top: env(safe-area-inset-top)) {
+  #modal-header {
+    padding-top: calc(1.25rem + env(safe-area-inset-top));
+  }
+  
+  #modal-close {
+    top: calc(0.75rem + env(safe-area-inset-top));
+  }
+  
+  @media (min-width: 640px) {
+    #modal-close {
+      top: calc(1rem + env(safe-area-inset-top));
+    }
+  }
 }
   </style>
 </head>
